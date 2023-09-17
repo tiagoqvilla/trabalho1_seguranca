@@ -1,27 +1,20 @@
-const { log } = require('console')
-const counter = require('./letter_frequency.js')
-const readFile = require('./read_file.js')
+const readFile = require('./fileReader.js')
+const {
+  calculateIndexOfCoincidence,
+  splitStringBySegmentLength,
+  shifText,
+  letterFrequencyCounter,
+} = require('./vigenereUtils.js')
+
+const alphabet = [...'abcdefghijklmnopqrstuvwxyz']
 
 const textPortuguese = readFile('plaintext_portuguese.txt')
 const textEnglish = readFile('plaintext_english.txt')
 
-const portugueseLetterFrequency = counter(textPortuguese)
-const englishLetterFrequency = counter(textEnglish)
+let splittedText = splitStringBySegmentLength(textPortuguese, 7)
 
+let shifted = shifText(splittedText)
 
-const calculateIndexOfCoincidence = (letterFrequency, textLength) => {
-    let N = textLength * (textLength - 1)
-
-    let sumF = 0
-    Object.keys(letterFrequency).forEach((letter, index) => {
-        let currentLetterValue = letterFrequency[letter]
-        let F = currentLetterValue * (currentLetterValue - 1)
-        sumF += F
-    })
-
-    return sumF / N
-
-}
-
-let indexOfCoincidenceEnglish = calculateIndexOfCoincidence(englishLetterFrequency, textEnglish.length)
-let indexOfCoincidencePortuguese = calculateIndexOfCoincidence(portugueseLetterFrequency, textPortuguese.length)
+let shiftedCounter = letterFrequencyCounter(shifted)
+let ioc = calculateIndexOfCoincidence(shiftedCounter, shifted.length)
+console.log(ioc)

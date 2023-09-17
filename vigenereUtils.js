@@ -1,3 +1,5 @@
+const ALPHABET = [...'abcdefghijklmnopqrstuvwxyz']
+
 /**
  * Conta frequência de letras em um texto
  * @param {string} str
@@ -60,9 +62,28 @@ const shifText = (sourceText) => {
     .join('')
 }
 
+/**
+ * Decodifica um texto cifrado de acordo com a chave passada por parâmetro
+ * @param {string} cipherText
+ * @param {string} key
+ * @returns
+ */
+const decrypt = (cipherText, key) => {
+  let plainText = ''
+  let cipher = [...cipherText]
+  for (let i = 0; i <= cipher.length; i++) {
+    let p = ALPHABET.indexOf(cipher[i])
+    let k = ALPHABET.indexOf(key[i % key.length])
+    let c = (p - k) % 26
+    plainText += ALPHABET.at(c)
+  }
+  return plainText
+}
+
 module.exports = {
   calculateIndexOfCoincidence,
   splitStringBySegmentLength,
   shifText,
   letterFrequencyCounter,
+  decrypt,
 }

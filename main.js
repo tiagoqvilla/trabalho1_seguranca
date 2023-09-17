@@ -4,9 +4,8 @@ const {
   splitStringBySegmentLength,
   shifText,
   letterFrequencyCounter,
+  decrypt,
 } = require('./vigenereUtils.js')
-
-const alphabet = [...'abcdefghijklmnopqrstuvwxyz']
 
 const textPortuguese = readFile('plaintext_portuguese.txt')
 const textEnglish = readFile('plaintext_english.txt')
@@ -17,4 +16,5 @@ let shifted = shifText(splittedText)
 
 let shiftedCounter = letterFrequencyCounter(shifted)
 let ioc = calculateIndexOfCoincidence(shiftedCounter, shifted.length)
-console.log(ioc)
+
+decrypt(textPortuguese, 'meunome')

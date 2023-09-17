@@ -62,6 +62,32 @@ const shifText = (sourceText) => {
     .join('')
 }
 
+const findKey = (cipherText, keyLength) => {
+  let cipher = [...cipherText]
+  let plainText = ''
+  for (let i = 0; i <= cipher.length; i++) {
+    let p = ALPHABET.indexOf(cipher[i])
+    let c = p - p
+    let k = c + keyLength
+    plainText += ALPHABET.at(k)
+  }
+  console.log(plainText)
+}
+
+const splitIntoBlocks = (cipherText, keyLength) => {
+  let blocks = []
+  for (
+    let startIndex = 0;
+    startIndex < cipherText.length;
+    startIndex += keyLength
+  ) {
+    let endIndex = Math.min(startIndex + keyLength, cipherText.length)
+    let block = cipherText.substring(startIndex, endIndex)
+    blocks.push(block)
+  }
+  return blocks
+}
+
 /**
  * Decodifica um texto cifrado de acordo com a chave passada por parâmetro
  * @param {string} cipherText
@@ -85,5 +111,7 @@ module.exports = {
   splitStringBySegmentLength,
   shifText,
   letterFrequencyCounter,
+  findKey,
+  splitIntoBlocks,
   decrypt,
 }

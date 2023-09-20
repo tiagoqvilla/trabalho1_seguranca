@@ -1,4 +1,6 @@
 const ALPHABET = [...'abcdefghijklmnopqrstuvwxyz']
+const MOST_FREQUENT_LETTER_PORTUGUESE = 'a'
+const MOST_FREQUENT_LETTER_ENGLISH = 'e'
 
 /**
  * Conta frequência de letras em um texto
@@ -88,6 +90,53 @@ const splitIntoBlocks = (cipherText, keyLength) => {
   return blocks
 }
 
+
+/**
+ * Divide o texto em N grupos de acordo com o tamanho da chave para que seja feita a análise análoga a uma cifra de César
+ * @param {array} blocks Texto dividido em blocos
+ * @param {int} keyLength Tamanho da chave
+ * @returns Object
+ */
+const createGroups = (blocks, keyLength) => {
+  let groups = {}
+  for (let i = 0; i < keyLength; i++) {
+      groups[`group_${i}`] = ''
+  }
+
+  blocks.forEach((block) => {
+      for (let i = 0; i < block.length; i++) {
+          groups[`group_${i}`] += block[i]
+        }
+  })
+
+  return groups
+}
+
+/**
+ * Retorna o caracter com a maior contagem dado um texto
+ * @param {Object} objectCount Objeto contendo a contagem de caracteres de um texto
+ * @returns 
+ */
+const getMaxValueLetter = (objectCount) => {
+  return Object.keys(objectCount).reduce((a, b) => objectCount[a] > objectCount[b] ? a : b)
+}
+
+/**
+ * Retorna a provável chave que cifra o texto
+ * @param {Object} groups Grupos de texto para que seja feita a análise
+ * @returns 
+ */
+const guessKey = (groups) => {
+  let probableKey = ''
+  Object.keys(groups).forEach((group) => {
+      let groupCount = letterFrequencyCounter(groups[group])
+      let highestLetterCount = getMaxValueLetter(groupCount)
+      let difference = ALPHABET.indexOf(highestLetterCount) - ALPHABET.indexOf(MOST_FREQUENT_LETTER_ENGLISH)
+      probableKey += ALPHABET.at(difference)
+  })
+  return probableKey
+}
+
 /**
  * Decodifica um texto cifrado de acordo com a chave passada por parâmetro
  * @param {string} cipherText
@@ -113,5 +162,7 @@ module.exports = {
   letterFrequencyCounter,
   findKey,
   splitIntoBlocks,
+  createGroups,
+  guessKey,
   decrypt,
 }

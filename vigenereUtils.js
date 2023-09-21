@@ -3,6 +3,30 @@ const MOST_FREQUENT_LETTER_PORTUGUESE = 'a'
 const MOST_FREQUENT_LETTER_ENGLISH = 'e'
 
 /**
+ * Retorna o provável tamanho da chave
+ * @param {string} text
+ * @param {number} languageIC
+ * @returns
+ */
+const guessKeyLength = (text, languageIC) => {
+  let probableKeyLength = 1
+  let delta = 1
+  for (let i = 2; i <= 15; i++) {
+    let splittedText = splitStringBySegmentLength(text, i)
+    let shifted = shifText(splittedText)
+    let shiftedCounter = letterFrequencyCounter(shifted)
+    let ioc = calculateIndexOfCoincidence(shiftedCounter, shifted.length)
+    console.log(`Tamanho: ${i} - IC: ${ioc}`)
+    let currentDifference = languageIC - ioc
+    if (currentDifference < delta) {
+      probableKeyLength = i
+      delta = currentDifference
+    }
+  }
+  return probableKeyLength
+}
+
+/**
  * Conta frequência de letras em um texto
  * @param {string} str
  * @returns
@@ -17,7 +41,7 @@ const letterFrequencyCounter = (str) => {
 /**
  * Calcula o índice de coincidência de um texto
  * @param {string} letterFrequency
- * @param {int} textLength
+ * @param {number} textLength
  * @returns
  */
 const calculateIndexOfCoincidence = (letterFrequency, textLength) => {
@@ -36,7 +60,7 @@ const calculateIndexOfCoincidence = (letterFrequency, textLength) => {
 /**
  * Divide um texto em segmentos de acordo com o parâmetro passado
  * @param {string} source
- * @param {int} segmentLength
+ * @param {number} segmentLength
  * @returns
  */
 const splitStringBySegmentLength = (source, segmentLength) => {
@@ -90,7 +114,6 @@ const splitIntoBlocks = (cipherText, keyLength) => {
   return blocks
 }
 
-
 /**
  * Divide o texto em N grupos de acordo com o tamanho da chave para que seja feita a análise análoga a uma cifra de César
  * @param {array} blocks Texto dividido em blocos
@@ -100,13 +123,13 @@ const splitIntoBlocks = (cipherText, keyLength) => {
 const createGroups = (blocks, keyLength) => {
   let groups = {}
   for (let i = 0; i < keyLength; i++) {
-      groups[`group_${i}`] = ''
+    groups[`group_${i}`] = ''
   }
 
   blocks.forEach((block) => {
-      for (let i = 0; i < block.length; i++) {
-          groups[`group_${i}`] += block[i]
-        }
+    for (let i = 0; i < block.length; i++) {
+      groups[`group_${i}`] += block[i]
+    }
   })
 
   return groups
@@ -115,24 +138,28 @@ const createGroups = (blocks, keyLength) => {
 /**
  * Retorna o caracter com a maior contagem dado um texto
  * @param {Object} objectCount Objeto contendo a contagem de caracteres de um texto
- * @returns 
+ * @returns
  */
 const getMaxValueLetter = (objectCount) => {
-  return Object.keys(objectCount).reduce((a, b) => objectCount[a] > objectCount[b] ? a : b)
+  return Object.keys(objectCount).reduce((a, b) =>
+    objectCount[a] > objectCount[b] ? a : b
+  )
 }
 
 /**
  * Retorna a provável chave que cifra o texto
  * @param {Object} groups Grupos de texto para que seja feita a análise
- * @returns 
+ * @returns
  */
 const guessKey = (groups) => {
   let probableKey = ''
   Object.keys(groups).forEach((group) => {
-      let groupCount = letterFrequencyCounter(groups[group])
-      let highestLetterCount = getMaxValueLetter(groupCount)
-      let difference = ALPHABET.indexOf(highestLetterCount) - ALPHABET.indexOf(MOST_FREQUENT_LETTER_ENGLISH)
-      probableKey += ALPHABET.at(difference)
+    let groupCount = letterFrequencyCounter(groups[group])
+    let highestLetterCount = getMaxValueLetter(groupCount)
+    let difference =
+      ALPHABET.indexOf(highestLetterCount) -
+      ALPHABET.indexOf(MOST_FREQUENT_LETTER_ENGLISH)
+    probableKey += ALPHABET.at(difference)
   })
   return probableKey
 }
@@ -164,5 +191,6 @@ module.exports = {
   splitIntoBlocks,
   createGroups,
   guessKey,
+  guessKeyLength,
   decrypt,
 }
